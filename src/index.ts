@@ -1,17 +1,12 @@
 /* 1. úloha
-BMI index - funkcia, ktorá má vstupné parametre hmotnosť v kg a výšku v cm a vráti, či má daná osoba podváhu (BMI<=19), normálnu hmotnosť (19<BMI<=25),
-nadváhu (25<BMI<=30) alebo obezitu a koľko kg musí schudnúť/pribrať, aby mal normálnu hmotnosť.
+BMI index - funkcia, ktorá má vstupné parametre hmotnosť v kg a výšku v cm a vráti, či má daná osoba podváhu (BMI<=19),
+normálnu hmotnosť (19<BMI<=25), nadváhu (25<BMI<=30) alebo obezitu a koľko kg musí schudnúť/pribrať, aby mal normálnu hmotnosť.
 
-#### *Ako vypočítať BMI?*
-
-+ *Vypočíta sa vydelením hmotnosti daného človeka druhou mocninou jeho výšky.*
-
-#### *BMI = m / h²*
-
-+ **m** *= telesná hmotnosť v kilogramoch*
-+ **h** *= telesná výška v metroch*
-
----
+Ako vypočítať BMI?
+Vypočíta sa vydelením hmotnosti daného človeka druhou mocninou jeho výšky.
+BMI = m / h²
+m = telesná hmotnosť v kilogramoch
+h = telesná výška v metroch
 */
 
 function calculateBMI(weightKg: number, heightCm: number) {
@@ -47,17 +42,16 @@ function calculateBMI(weightKg: number, heightCm: number) {
     };
 }
 
-/*
-## 2. úloha
+/* 2. úloha
 Napíšte funkciu, ktorá dostane vetu (max. 255 znakov), spočíta počet výskytov jednotlivých písmen vo vete (nerozlišuje veľké a malé písmená)
 a vypíše prehľadnú tabuľku.
 
-- Napr.:
-    - pre slovo Alabama:
-        - a 4
-        - l 1
-        - b 1
-        - m 1
+Napr.:
+pre slovo Alabama:
+a 4
+l 1
+b 1
+m 1
 */
 
 function calculateLetters(text: string) {
@@ -76,6 +70,20 @@ function calculateLetters(text: string) {
     }
 }
 
+/* 3. úloha
+V slovnej zásobe slovenského jazyka existujú slová, resp. slovné spojenia, ktoré sa čítajú rovnako sprava i zľava,
+napr. abba, madam, radar, kobyla ma maly bok, jelenovi pivo nelej... Nazývame ich palindromy.
+Napíšte funkciu, ktorá pre vstupný reťazec overí, či ide o takéto slovo/vetu.
+Program v slove/vo vete nerozlišuje malé a veľké písmená a ignoruje medzery.
+*/
+
+function isPalindrome(text:string) : boolean {
+    text = text.toLowerCase().trim()
+    let textReversed = text.split("").reverse().join("")
+    if (text === textReversed) {return true}
+    else {return false}
+}
+
 
 
 
@@ -87,3 +95,9 @@ console.log(result);
 
 //TASK №2
 calculateLetters("Alabama");
+
+//TASK №3
+console.log(isPalindrome("hello"))
+console.log(isPalindrome("RaDar"))
+
+//TASK №4
