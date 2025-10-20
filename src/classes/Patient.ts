@@ -1,5 +1,5 @@
 export class Patient {
-    id: string;
+    readonly id: string;
     name: string;
     birthDate: Date;
     phone: string | undefined;
@@ -15,10 +15,14 @@ export class Patient {
             throw new Error('Invalid Slovak phone number format. Must be like +421 XXX XXX XXX.');
         }
 
-        this.id = Math.random().toString(36).substring(2);
+        this.id = Patient.generateUniqueId(); // Используем наш внутренний генератор
         this.name = name.trim();
         this.birthDate = birthDate;
         this.phone = phone;
+    }
+
+    static generateUniqueId(): string {
+        return `${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
     }
 
     static isValidName(name: string): boolean {

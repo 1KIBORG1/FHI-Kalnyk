@@ -1,11 +1,13 @@
-import {Patient} from '../classes/Patient';
-import {Doctor} from '../classes/Doctor';
-import {Appointment} from '../classes/Appointment';
+import { Patient } from '../classes/Patient';
+import { Doctor } from '../classes/Doctor';
+import { Appointment } from '../classes/Appointment';
+import { MedicalRecord } from '../classes/MedicalRecord';
 
 export class MedicalService {
     private patients: Patient[] = [];
     private doctors: Doctor[] = [];
     private appointments: Appointment[] = [];
+    private medicalRecords: MedicalRecord[] = [];
 
     addDoctor(name: string, specialization: string, email?: string): Doctor {
         const doctor = new Doctor(name, specialization, email);
@@ -15,7 +17,7 @@ export class MedicalService {
     }
 
     getDoctorById(id: string): Doctor | undefined {
-        return this.doctors.find(d => d.id === id);
+        return this.doctors.find((d) => d.id === id);
     }
 
     getAllDoctors(): Doctor[] {
@@ -30,58 +32,95 @@ export class MedicalService {
     }
 
     getPatientById(id: string): Patient | undefined {
-        return this.patients.find(p => p.id === id);
+        return this.patients.find((p) => p.id === id);
     }
 
     getAllPatients(): Patient[] {
         return this.patients;
     }
 
-    createAppointment(patientId: string, doctorId: string, date: Date, description: string): Appointment | null {
+    createAppointment(
+        patientId: string,
+        doctorId: string,
+        date: Date,
+        description: string
+    ): Appointment | null {
         const patient = this.getPatientById(patientId);
         const doctor = this.getDoctorById(doctorId);
         if (!patient || !doctor) {
             console.error('Error: Patient or doctor not found.');
             return null;
         }
-        const appointment = new Appointment(patientId, doctorId, date, description);
-        this.appointments.push(appointment);
-        console.log(`Patient ${patient.name} has been scheduled with Dr. ${doctor.name} on ${date.toLocaleString()}`);
-        return appointment;
+
+        try {
+            const appointment = new Appointment(
+                patientId,
+                doctorId,
+                date,
+                description
+            );
+            this.appointments.push(appointment);
+            console.log(
+                `Patient ${patient.name} has been scheduled with Dr. ${
+                    doctor.name
+                } on ${date.toLocaleString()}`
+            );
+            return appointment;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(`Failed to create appointment: ${error.message}`);
+            }
+            return null;
+        }
     }
 
     getAppointmentById(id: string): Appointment | undefined {
-        return this.appointments.find(a => a.id === id);
+        return this.appointments.find((a) => a.id === id);
     }
 
     getAllAppointments(): Appointment[] {
         return this.appointments;
     }
 
-    updateAppointment(id: string, newDate: Date, newDescription: string, newStatus?: 'new' | 'confirmed' | 'completed' | 'cancelled'): Appointment | null {
+    /**
+     * Updates an existing appointment, including its date, description, and status.
+     * This is the single point of truth for all appointment modifications.
+     */
+    updateAppointment(
+        id: string,
+        newDate: Date,
+        newDescription: string,
+        newStatus?: 'new' | 'confirmed' | 'completed' | 'cancelled'
+    ): Appointment | null {
         const appointment = this.getAppointmentById(id);
-
         if (!appointment) {
             console.error(`Error: Appointment with ID ${id} not found.`);
             return null;
         }
 
-        // --- Enhanced Validation before update ---
-        if (!Appointment.isValidDate(newDate)) {
-            console.error('Update failed: Appointment date cannot be in the past.');
+        try {
+            appointment.setDate(newDate);
+        } catch (e) {
+            if (e instanceof Error) {
+                console.error(`Update failed: ${e.message}`);
+            }
             return null;
         }
-        if (!Appointment.isValidDescription(newDescription)) {
-            console.error('Update failed: Description must be between 1 and 300 characters.');
-            return null;
-        }
+
         if (newStatus && !Appointment.isValidStatus(newStatus)) {
             console.error('Update failed: Invalid appointment status.');
             return null;
         }
 
-        appointment.date = newDate;
+        if (!Appointment.isValidDescription(newDescription)) {
+            console.error(
+                'Update failed: Description must be between 1 and 300 characters.'
+            );
+            return null;
+        }
+
         appointment.description = newDescription.trim();
+
         if (newStatus) {
             appointment.status = newStatus;
         }
@@ -91,7 +130,7 @@ export class MedicalService {
     }
 
     deleteAppointment(id: string): boolean {
-        const index = this.appointments.findIndex(a => a.id === id);
+        const index = this.appointments.findIndex((a) => a.id === id);
         if (index !== -1) {
             this.appointments.splice(index, 1);
             console.log(`Appointment ${id} has been deleted.`);
@@ -103,34 +142,17 @@ export class MedicalService {
 
     searchPatientsByName(namePart: string): Patient[] {
         const lowerCaseNamePart = namePart.toLowerCase();
-        return this.patients.filter(p => p.name.toLowerCase().includes(lowerCaseNamePart));
+        return this.patients.filter((p) =>
+            p.name.toLowerCase().includes(lowerCaseNamePart)
+        );
     }
 
     getAppointmentsByPatient(patientId: string): Appointment[] {
-        return this.appointments.filter(a => a.patientId === patientId);
+        return this.appointments.filter((a) => a.patientId === patientId);
     }
 
     getAppointmentsByDoctor(doctorId: string): Appointment[] {
-        return this.appointments.filter(a => a.doctorId === doctorId);
+        return this.appointments.filter((a) => a.doctorId === doctorId);
     }
 
-    confirmAppointment(id: string): boolean {
-        const appointment = this.getAppointmentById(id);
-        if (appointment && appointment.status === 'new') {
-            appointment.status = 'confirmed';
-            console.log(`Appointment ${id} has been confirmed.`);
-            return true;
-        }
-        return false;
-    }
-
-    cancelAppointment(id: string): boolean {
-        const appointment = this.getAppointmentById(id);
-        if (appointment && appointment.status !== 'cancelled' && appointment.status !== 'completed') {
-            appointment.status = 'cancelled';
-            console.log(`Appointment ${id} has been cancelled.`);
-            return true;
-        }
-        return false;
-    }
 }
