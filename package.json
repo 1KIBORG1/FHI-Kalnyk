@@ -1,7 +1,7 @@
 {
-  "name": "fhi-kalnyk",
+  "name": "fhi-imapl-2025",
   "scripts": {
-    "start": "node src/index.ts"
+    "start": "ts-node src/index.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
